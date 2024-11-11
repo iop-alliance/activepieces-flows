@@ -1,0 +1,1109 @@
+{
+  "created": "1731285242086",
+  "updated": "1731285242086",
+  "name": "Distributed Production",
+  "description": "",
+  "tags": [],
+  "pieces": [
+    "@activepieces/piece-webhook",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-approval",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend",
+    "@activepieces/piece-resend"
+  ],
+  "template": {
+    "displayName": "Distributed Production",
+    "trigger": {
+      "name": "trigger",
+      "valid": true,
+      "displayName": "Catch Webhook",
+      "type": "PIECE_TRIGGER",
+      "settings": {
+        "pieceName": "@activepieces/piece-webhook",
+        "pieceVersion": "0.1.5",
+        "pieceType": "OFFICIAL",
+        "packageType": "REGISTRY",
+        "input": {
+          "authType": "none",
+          "authFields": {}
+        },
+        "inputUiInfo": {
+          "customizedInputs": {
+            "authType": false
+          }
+        },
+        "triggerName": "catch_webhook"
+      },
+      "nextAction": {
+        "name": "step_2",
+        "type": "PIECE",
+        "valid": true,
+        "settings": {
+          "input": {},
+          "pieceName": "@activepieces/piece-approval",
+          "pieceType": "OFFICIAL",
+          "actionName": "create_approval_links",
+          "inputUiInfo": {
+            "customizedInputs": {}
+          },
+          "packageType": "REGISTRY",
+          "pieceVersion": "0.1.7",
+          "errorHandlingOptions": {
+            "retryOnFailure": {
+              "value": false
+            },
+            "continueOnFailure": {
+              "value": false
+            }
+          }
+        },
+        "nextAction": {
+          "name": "step_1",
+          "type": "PIECE",
+          "valid": true,
+          "settings": {
+            "input": {
+              "cc": [],
+              "to": [
+                "{{trigger['body']['manufacturer_email']}}"
+              ],
+              "bcc": [],
+              "auth": "{{connections['resend']}}",
+              "from": "no-reply@internetofproduction.org",
+              "content": "{{trigger['body']['initiator_name']}} with email address {{trigger['body']['initiator_email']}}\nis requesting that you approve a purchase contract for the manufacturing of {{trigger['body']['product_name']}} (Qty: {{trigger['body']['quantity']}})\n<br /><br /><br />\nTo approve the contract click here:\n{{step_2['approvalLink']}}\n<br /><br /><br />\nTo reject the contract click here: {{step_2['disapprovalLink']}}",
+              "subject": "Distributed manufacturing contract signature request",
+              "reply_to": "{{trigger['body']['initiator_email']}}",
+              "from_name": "{{trigger['body']['initiator_name']}}",
+              "content_type": "html"
+            },
+            "pieceName": "@activepieces/piece-resend",
+            "pieceType": "OFFICIAL",
+            "actionName": "send_email",
+            "inputUiInfo": {
+              "customizedInputs": {}
+            },
+            "packageType": "REGISTRY",
+            "pieceVersion": "0.1.4",
+            "errorHandlingOptions": {
+              "retryOnFailure": {
+                "value": false
+              },
+              "continueOnFailure": {
+                "value": false
+              }
+            }
+          },
+          "nextAction": {
+            "name": "step_4",
+            "type": "PIECE",
+            "valid": true,
+            "settings": {
+              "input": {},
+              "pieceName": "@activepieces/piece-approval",
+              "pieceType": "OFFICIAL",
+              "actionName": "wait_for_approval",
+              "inputUiInfo": {
+                "customizedInputs": {}
+              },
+              "packageType": "REGISTRY",
+              "pieceVersion": "0.1.7",
+              "errorHandlingOptions": {
+                "retryOnFailure": {
+                  "value": false
+                },
+                "continueOnFailure": {
+                  "value": false
+                }
+              }
+            },
+            "nextAction": {
+              "name": "step_29",
+              "type": "ROUTER",
+              "valid": true,
+              "children": [
+                {
+                  "name": "step_3",
+                  "type": "PIECE",
+                  "valid": true,
+                  "settings": {
+                    "input": {
+                      "cc": [],
+                      "to": [
+                        "{{trigger['body']['initiator_email']}}"
+                      ],
+                      "bcc": [],
+                      "auth": "{{connections['resend']}}",
+                      "from": "no-reply@internetofproduction.org",
+                      "content": "The manufacturing contract for the production of {{trigger['body']['quantity']}}x {{trigger['body']['product_name']}} has been approved by {{trigger['body']['manufacturer_name']}}",
+                      "subject": "Manufacturing contract approved",
+                      "reply_to": "{{trigger['body']['manufacturer_email']}}",
+                      "from_name": "{{trigger['body']['manufacturer_name']}}",
+                      "content_type": "html"
+                    },
+                    "pieceName": "@activepieces/piece-resend",
+                    "pieceType": "OFFICIAL",
+                    "actionName": "send_email",
+                    "inputUiInfo": {
+                      "customizedInputs": {}
+                    },
+                    "packageType": "REGISTRY",
+                    "pieceVersion": "0.1.4",
+                    "errorHandlingOptions": {
+                      "retryOnFailure": {
+                        "value": false
+                      },
+                      "continueOnFailure": {
+                        "value": false
+                      }
+                    }
+                  },
+                  "nextAction": {
+                    "name": "step_5",
+                    "type": "PIECE",
+                    "valid": true,
+                    "settings": {
+                      "input": {},
+                      "pieceName": "@activepieces/piece-approval",
+                      "pieceType": "OFFICIAL",
+                      "actionName": "create_approval_links",
+                      "inputUiInfo": {
+                        "customizedInputs": {}
+                      },
+                      "packageType": "REGISTRY",
+                      "pieceVersion": "0.1.7",
+                      "errorHandlingOptions": {
+                        "retryOnFailure": {
+                          "value": false
+                        },
+                        "continueOnFailure": {
+                          "value": false
+                        }
+                      }
+                    },
+                    "nextAction": {
+                      "name": "step_6",
+                      "type": "PIECE",
+                      "valid": true,
+                      "settings": {
+                        "input": {
+                          "cc": [],
+                          "to": [
+                            "{{trigger['body']['initiator_email']}}"
+                          ],
+                          "bcc": [],
+                          "auth": "{{connections['resend']}}",
+                          "from": "no-reply@internetofproduction.org",
+                          "content": "{{trigger['body']['manufacturer_name']}} is requesting the agreed upfront payment of $X for the manufacture of {{trigger['body']['product_name']}}.\n<br /><br /><br />\nTo confirm that the payment has been sent click this link: {{step_5['approvalLink']}}\n<br /><br /><br />\nTo decline the request for payment, click this link: {{step_5['disapprovalLink']}}\n",
+                          "subject": "Request for initial payment",
+                          "reply_to": "{{trigger['body']['manufacturer_email']}}",
+                          "from_name": "{{trigger['body']['manufacturer_name']}}",
+                          "content_type": "html"
+                        },
+                        "pieceName": "@activepieces/piece-resend",
+                        "pieceType": "OFFICIAL",
+                        "actionName": "send_email",
+                        "inputUiInfo": {
+                          "customizedInputs": {}
+                        },
+                        "packageType": "REGISTRY",
+                        "pieceVersion": "0.1.4",
+                        "errorHandlingOptions": {
+                          "retryOnFailure": {
+                            "value": false
+                          },
+                          "continueOnFailure": {
+                            "value": false
+                          }
+                        }
+                      },
+                      "nextAction": {
+                        "name": "step_7",
+                        "type": "PIECE",
+                        "valid": true,
+                        "settings": {
+                          "input": {},
+                          "pieceName": "@activepieces/piece-approval",
+                          "pieceType": "OFFICIAL",
+                          "actionName": "wait_for_approval",
+                          "inputUiInfo": {
+                            "customizedInputs": {}
+                          },
+                          "packageType": "REGISTRY",
+                          "pieceVersion": "0.1.7",
+                          "errorHandlingOptions": {
+                            "retryOnFailure": {
+                              "value": false
+                            },
+                            "continueOnFailure": {
+                              "value": false
+                            }
+                          }
+                        },
+                        "nextAction": {
+                          "name": "step_31",
+                          "type": "ROUTER",
+                          "valid": true,
+                          "children": [
+                            {
+                              "name": "step_9",
+                              "type": "PIECE",
+                              "valid": true,
+                              "settings": {
+                                "input": {},
+                                "pieceName": "@activepieces/piece-approval",
+                                "pieceType": "OFFICIAL",
+                                "actionName": "create_approval_links",
+                                "inputUiInfo": {
+                                  "customizedInputs": {}
+                                },
+                                "packageType": "REGISTRY",
+                                "pieceVersion": "0.1.7",
+                                "errorHandlingOptions": {
+                                  "retryOnFailure": {
+                                    "value": false
+                                  },
+                                  "continueOnFailure": {
+                                    "value": false
+                                  }
+                                }
+                              },
+                              "nextAction": {
+                                "name": "step_8",
+                                "type": "PIECE",
+                                "valid": true,
+                                "settings": {
+                                  "input": {
+                                    "cc": [],
+                                    "to": [
+                                      "{{trigger['body']['manufacturer_email']}}"
+                                    ],
+                                    "bcc": [],
+                                    "auth": "{{connections['resend']}}",
+                                    "from": "no-reply@internetofproduction.org",
+                                    "content": "The upfront payment for the manufacture of {{trigger['body']['product_name']}} for {{trigger['body']['initiator_name']}} has been made.\n<br><br><br>\nPlease proceed with manufacturing one item and send it to {{trigger['body']['qi_name']}} for evaluation.\n<br><br><br>\nOnce it has been shipped, click on this link to confirm:  {{step_9['approvalLink']}}",
+                                    "subject": "Confirmation of upfront payment for manufacture of {{trigger['body']['product_name']}}",
+                                    "reply_to": "{{trigger['body']['initiator_email']}}",
+                                    "from_name": "{{trigger['body']['initiator_name']}}",
+                                    "content_type": "html"
+                                  },
+                                  "pieceName": "@activepieces/piece-resend",
+                                  "pieceType": "OFFICIAL",
+                                  "actionName": "send_email",
+                                  "inputUiInfo": {
+                                    "customizedInputs": {}
+                                  },
+                                  "packageType": "REGISTRY",
+                                  "pieceVersion": "0.1.4",
+                                  "errorHandlingOptions": {
+                                    "retryOnFailure": {
+                                      "value": false
+                                    },
+                                    "continueOnFailure": {
+                                      "value": false
+                                    }
+                                  }
+                                },
+                                "nextAction": {
+                                  "name": "step_10",
+                                  "type": "PIECE",
+                                  "valid": true,
+                                  "settings": {
+                                    "input": {},
+                                    "pieceName": "@activepieces/piece-approval",
+                                    "pieceType": "OFFICIAL",
+                                    "actionName": "wait_for_approval",
+                                    "inputUiInfo": {
+                                      "customizedInputs": {}
+                                    },
+                                    "packageType": "REGISTRY",
+                                    "pieceVersion": "0.1.7",
+                                    "errorHandlingOptions": {
+                                      "retryOnFailure": {
+                                        "value": false
+                                      },
+                                      "continueOnFailure": {
+                                        "value": false
+                                      }
+                                    }
+                                  },
+                                  "nextAction": {
+                                    "name": "step_12",
+                                    "type": "PIECE",
+                                    "valid": true,
+                                    "settings": {
+                                      "input": {},
+                                      "pieceName": "@activepieces/piece-approval",
+                                      "pieceType": "OFFICIAL",
+                                      "actionName": "create_approval_links",
+                                      "inputUiInfo": {
+                                        "customizedInputs": {}
+                                      },
+                                      "packageType": "REGISTRY",
+                                      "pieceVersion": "0.1.7",
+                                      "errorHandlingOptions": {
+                                        "retryOnFailure": {
+                                          "value": false
+                                        },
+                                        "continueOnFailure": {
+                                          "value": false
+                                        }
+                                      }
+                                    },
+                                    "nextAction": {
+                                      "name": "step_11",
+                                      "type": "PIECE",
+                                      "valid": true,
+                                      "settings": {
+                                        "input": {
+                                          "cc": [],
+                                          "to": [
+                                            "{{trigger['body']['qi_email']}}"
+                                          ],
+                                          "bcc": [],
+                                          "auth": "{{connections['resend']}}",
+                                          "from": "no-reply@internetofproduction.org",
+                                          "content": "A sample of {{trigger['body']['product_name']}} manufactured by {{trigger['body']['manufacturer_name']}} under contract with {{trigger['body']['initiator_name']}} has been shipped to you for quality inspection.\n<br><br><br>\nIf the item passes quality inspection then click on this link: {{step_12['approvalLink']}}\n<br><br><br>\nIf the item fails quality inspection then click on this link: {{step_12['disapprovalLink']}}",
+                                          "subject": "Request to carry out quality inspection on sample",
+                                          "reply_to": "{{trigger['body']['initiator_email']}}",
+                                          "from_name": "{{trigger['body']['initiator_name']}}",
+                                          "content_type": "html"
+                                        },
+                                        "pieceName": "@activepieces/piece-resend",
+                                        "pieceType": "OFFICIAL",
+                                        "actionName": "send_email",
+                                        "inputUiInfo": {
+                                          "customizedInputs": {}
+                                        },
+                                        "packageType": "REGISTRY",
+                                        "pieceVersion": "0.1.4",
+                                        "errorHandlingOptions": {
+                                          "retryOnFailure": {
+                                            "value": false
+                                          },
+                                          "continueOnFailure": {
+                                            "value": false
+                                          }
+                                        }
+                                      },
+                                      "nextAction": {
+                                        "name": "step_14",
+                                        "type": "PIECE",
+                                        "valid": true,
+                                        "settings": {
+                                          "input": {},
+                                          "pieceName": "@activepieces/piece-approval",
+                                          "pieceType": "OFFICIAL",
+                                          "actionName": "wait_for_approval",
+                                          "inputUiInfo": {
+                                            "customizedInputs": {}
+                                          },
+                                          "packageType": "REGISTRY",
+                                          "pieceVersion": "0.1.7",
+                                          "errorHandlingOptions": {
+                                            "retryOnFailure": {
+                                              "value": false
+                                            },
+                                            "continueOnFailure": {
+                                              "value": false
+                                            }
+                                          }
+                                        },
+                                        "nextAction": {
+                                          "name": "step_13",
+                                          "type": "ROUTER",
+                                          "valid": true,
+                                          "children": [
+                                            {
+                                              "name": "step_17",
+                                              "type": "PIECE",
+                                              "valid": true,
+                                              "settings": {
+                                                "input": {},
+                                                "pieceName": "@activepieces/piece-approval",
+                                                "pieceType": "OFFICIAL",
+                                                "actionName": "create_approval_links",
+                                                "inputUiInfo": {
+                                                  "customizedInputs": {}
+                                                },
+                                                "packageType": "REGISTRY",
+                                                "pieceVersion": "0.1.7",
+                                                "errorHandlingOptions": {
+                                                  "retryOnFailure": {
+                                                    "value": false
+                                                  },
+                                                  "continueOnFailure": {
+                                                    "value": false
+                                                  }
+                                                }
+                                              },
+                                              "nextAction": {
+                                                "name": "step_16",
+                                                "type": "PIECE",
+                                                "valid": true,
+                                                "settings": {
+                                                  "input": {
+                                                    "cc": [],
+                                                    "to": [
+                                                      "{{trigger['body']['initiator_email']}}"
+                                                    ],
+                                                    "bcc": [],
+                                                    "auth": "{{connections['resend']}}",
+                                                    "from": "no-reply@internetofproduction.org",
+                                                    "content": "The sample item manufactured by {{trigger['body']['manufacturer_name']}} has passed quality inspection.\n<br><br><br>\nThe next step is to release the next payment tranche.\n<br><br><br>\nOnce the payment has been made, click on this link to confirm: {{step_17['approvalLink']}}",
+                                                    "subject": "Quality inspection pass",
+                                                    "reply_to": "{{trigger['body']['qi_email']}}",
+                                                    "from_name": "{{trigger['body']['qi_name']}}",
+                                                    "content_type": "html"
+                                                  },
+                                                  "pieceName": "@activepieces/piece-resend",
+                                                  "pieceType": "OFFICIAL",
+                                                  "actionName": "send_email",
+                                                  "inputUiInfo": {
+                                                    "customizedInputs": {}
+                                                  },
+                                                  "packageType": "REGISTRY",
+                                                  "pieceVersion": "0.1.4",
+                                                  "errorHandlingOptions": {
+                                                    "retryOnFailure": {
+                                                      "value": false
+                                                    },
+                                                    "continueOnFailure": {
+                                                      "value": false
+                                                    }
+                                                  }
+                                                },
+                                                "nextAction": {
+                                                  "name": "step_34",
+                                                  "type": "PIECE",
+                                                  "valid": true,
+                                                  "settings": {
+                                                    "input": {
+                                                      "cc": [],
+                                                      "to": [
+                                                        "{{trigger['body']['manufacturer_email']}}"
+                                                      ],
+                                                      "bcc": [],
+                                                      "auth": "{{connections['resend']}}",
+                                                      "from": "no-reply@internetofproduction.org",
+                                                      "content": "Congratulations! The sample item ({{trigger['body']['product_name']}}) you manufactured for {{trigger['body']['initiator_name']}} has passed quality inspection.\n<br><br><br>\n{{trigger['body']['initiator_name']}} should now release the next payment tranche.\n<br><br><br>\nOnce the payment has been made, please proceed with the manufacture of the remaining quantity ({{trigger['body']['quantity']}} items).",
+                                                      "subject": "Quality inspection pass",
+                                                      "reply_to": "{{trigger['body']['qi_email']}}",
+                                                      "from_name": "{{trigger['body']['qi_name']}}",
+                                                      "content_type": "html"
+                                                    },
+                                                    "pieceName": "@activepieces/piece-resend",
+                                                    "pieceType": "OFFICIAL",
+                                                    "actionName": "send_email",
+                                                    "inputUiInfo": {
+                                                      "customizedInputs": {}
+                                                    },
+                                                    "packageType": "REGISTRY",
+                                                    "pieceVersion": "0.1.4",
+                                                    "errorHandlingOptions": {
+                                                      "retryOnFailure": {
+                                                        "value": false
+                                                      },
+                                                      "continueOnFailure": {
+                                                        "value": false
+                                                      }
+                                                    }
+                                                  },
+                                                  "nextAction": {
+                                                    "name": "step_18",
+                                                    "type": "PIECE",
+                                                    "valid": true,
+                                                    "settings": {
+                                                      "input": {},
+                                                      "pieceName": "@activepieces/piece-approval",
+                                                      "pieceType": "OFFICIAL",
+                                                      "actionName": "wait_for_approval",
+                                                      "inputUiInfo": {
+                                                        "customizedInputs": {}
+                                                      },
+                                                      "packageType": "REGISTRY",
+                                                      "pieceVersion": "0.1.7",
+                                                      "errorHandlingOptions": {
+                                                        "retryOnFailure": {
+                                                          "value": false
+                                                        },
+                                                        "continueOnFailure": {
+                                                          "value": false
+                                                        }
+                                                      }
+                                                    },
+                                                    "nextAction": {
+                                                      "name": "step_21",
+                                                      "type": "PIECE",
+                                                      "valid": true,
+                                                      "settings": {
+                                                        "input": {},
+                                                        "pieceName": "@activepieces/piece-approval",
+                                                        "pieceType": "OFFICIAL",
+                                                        "actionName": "create_approval_links",
+                                                        "inputUiInfo": {
+                                                          "customizedInputs": {}
+                                                        },
+                                                        "packageType": "REGISTRY",
+                                                        "pieceVersion": "0.1.7",
+                                                        "errorHandlingOptions": {
+                                                          "retryOnFailure": {
+                                                            "value": false
+                                                          },
+                                                          "continueOnFailure": {
+                                                            "value": false
+                                                          }
+                                                        }
+                                                      },
+                                                      "nextAction": {
+                                                        "name": "step_20",
+                                                        "type": "PIECE",
+                                                        "valid": true,
+                                                        "settings": {
+                                                          "input": {
+                                                            "cc": [],
+                                                            "to": [
+                                                              "{{trigger['body']['manufacturer_email']}}"
+                                                            ],
+                                                            "bcc": [],
+                                                            "auth": "{{connections['resend']}}",
+                                                            "from": "no-reply@internetofproduction.org",
+                                                            "content": "The 2nd payment for the manufacture of {{trigger['body']['product_name']}} (total quantity {{trigger['body']['quantity']}}) has been made.\n<br><br><br>\nPlease proceed with the production of the remaining items and deliver them to the agreed location. \n<br><br><br>\nOnce the items have been shipped, click on the following link to confirm: {{step_21['approvalLink']}}",
+                                                            "subject": "2nd Payment sent for manufacture of {{trigger['body']['product_name']}}",
+                                                            "reply_to": "{{trigger['body']['initiator_email']}}",
+                                                            "from_name": "{{trigger['body']['initiator_name']}}",
+                                                            "content_type": "html"
+                                                          },
+                                                          "pieceName": "@activepieces/piece-resend",
+                                                          "pieceType": "OFFICIAL",
+                                                          "actionName": "send_email",
+                                                          "inputUiInfo": {
+                                                            "customizedInputs": {}
+                                                          },
+                                                          "packageType": "REGISTRY",
+                                                          "pieceVersion": "0.1.4",
+                                                          "errorHandlingOptions": {
+                                                            "retryOnFailure": {
+                                                              "value": false
+                                                            },
+                                                            "continueOnFailure": {
+                                                              "value": false
+                                                            }
+                                                          }
+                                                        },
+                                                        "nextAction": {
+                                                          "name": "step_22",
+                                                          "type": "PIECE",
+                                                          "valid": true,
+                                                          "settings": {
+                                                            "input": {},
+                                                            "pieceName": "@activepieces/piece-approval",
+                                                            "pieceType": "OFFICIAL",
+                                                            "actionName": "wait_for_approval",
+                                                            "inputUiInfo": {
+                                                              "customizedInputs": {}
+                                                            },
+                                                            "packageType": "REGISTRY",
+                                                            "pieceVersion": "0.1.7",
+                                                            "errorHandlingOptions": {
+                                                              "retryOnFailure": {
+                                                                "value": false
+                                                              },
+                                                              "continueOnFailure": {
+                                                                "value": false
+                                                              }
+                                                            }
+                                                          },
+                                                          "nextAction": {
+                                                            "name": "step_24",
+                                                            "type": "PIECE",
+                                                            "valid": true,
+                                                            "settings": {
+                                                              "input": {},
+                                                              "pieceName": "@activepieces/piece-approval",
+                                                              "pieceType": "OFFICIAL",
+                                                              "actionName": "create_approval_links",
+                                                              "inputUiInfo": {
+                                                                "customizedInputs": {}
+                                                              },
+                                                              "packageType": "REGISTRY",
+                                                              "pieceVersion": "0.1.7",
+                                                              "errorHandlingOptions": {
+                                                                "retryOnFailure": {
+                                                                  "value": false
+                                                                },
+                                                                "continueOnFailure": {
+                                                                  "value": false
+                                                                }
+                                                              }
+                                                            },
+                                                            "nextAction": {
+                                                              "name": "step_23",
+                                                              "type": "PIECE",
+                                                              "valid": true,
+                                                              "settings": {
+                                                                "input": {
+                                                                  "cc": [],
+                                                                  "to": [
+                                                                    "{{trigger['body']['initiator_email']}}"
+                                                                  ],
+                                                                  "bcc": [],
+                                                                  "auth": "{{connections['resend']}}",
+                                                                  "from": "no-reply@internetofproduction.org",
+                                                                  "content": "The manufacture of {{trigger['body']['product_name']}} (quantity: {{trigger['body']['quantity']}}) by {{trigger['body']['manufacturer_name']}} has been completed and the items have been shipped.\n<br><br><br>\nWhen the items are received and inspected, if they pass final quality inspection then click on this link to confirm that the final payment has been sent to {{trigger['body']['manufacturer_name']}}: {{step_24['approvalLink']}}\n<br><br><br>\nIf the items do not pass quality inspection then click on this link: {{step_24['disapprovalLink']}}",
+                                                                  "subject": "All manufactured items shipped",
+                                                                  "reply_to": "{{trigger['body']['manufacturer_email']}}",
+                                                                  "from_name": "{{trigger['body']['manufacturer_name']}}",
+                                                                  "content_type": "html"
+                                                                },
+                                                                "pieceName": "@activepieces/piece-resend",
+                                                                "pieceType": "OFFICIAL",
+                                                                "actionName": "send_email",
+                                                                "inputUiInfo": {
+                                                                  "customizedInputs": {}
+                                                                },
+                                                                "packageType": "REGISTRY",
+                                                                "pieceVersion": "0.1.4",
+                                                                "errorHandlingOptions": {
+                                                                  "retryOnFailure": {
+                                                                    "value": false
+                                                                  },
+                                                                  "continueOnFailure": {
+                                                                    "value": false
+                                                                  }
+                                                                }
+                                                              },
+                                                              "nextAction": {
+                                                                "name": "step_25",
+                                                                "type": "PIECE",
+                                                                "valid": true,
+                                                                "settings": {
+                                                                  "input": {},
+                                                                  "pieceName": "@activepieces/piece-approval",
+                                                                  "pieceType": "OFFICIAL",
+                                                                  "actionName": "wait_for_approval",
+                                                                  "inputUiInfo": {
+                                                                    "customizedInputs": {}
+                                                                  },
+                                                                  "packageType": "REGISTRY",
+                                                                  "pieceVersion": "0.1.7",
+                                                                  "errorHandlingOptions": {
+                                                                    "retryOnFailure": {
+                                                                      "value": false
+                                                                    },
+                                                                    "continueOnFailure": {
+                                                                      "value": false
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "nextAction": {
+                                                                  "name": "step_27",
+                                                                  "type": "ROUTER",
+                                                                  "valid": true,
+                                                                  "children": [
+                                                                    {
+                                                                      "name": "step_28",
+                                                                      "type": "PIECE",
+                                                                      "valid": true,
+                                                                      "settings": {
+                                                                        "input": {
+                                                                          "cc": [],
+                                                                          "to": [
+                                                                            "{{trigger['body']['manufacturer_email']}}"
+                                                                          ],
+                                                                          "bcc": [],
+                                                                          "auth": "{{connections['resend']}}",
+                                                                          "from": "no-reply@internetofproduction.org",
+                                                                          "content": "Congratulations! The items you delivered to us have passed final quality inspection and we have made the final payment.\n<br><br><br>\nIt's been a pleasure working with you.",
+                                                                          "subject": "Final payment sent for manufacture of {{trigger['body']['product_name']}}",
+                                                                          "reply_to": "{{trigger['body']['initiator_email']}}",
+                                                                          "from_name": "{{trigger['body']['initiator_name']}}",
+                                                                          "content_type": "html"
+                                                                        },
+                                                                        "pieceName": "@activepieces/piece-resend",
+                                                                        "pieceType": "OFFICIAL",
+                                                                        "actionName": "send_email",
+                                                                        "inputUiInfo": {
+                                                                          "customizedInputs": {}
+                                                                        },
+                                                                        "packageType": "REGISTRY",
+                                                                        "pieceVersion": "0.1.4",
+                                                                        "errorHandlingOptions": {
+                                                                          "retryOnFailure": {
+                                                                            "value": false
+                                                                          },
+                                                                          "continueOnFailure": {
+                                                                            "value": false
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "displayName": "Send final payment confirmation Email"
+                                                                    },
+                                                                    {
+                                                                      "name": "step_26",
+                                                                      "type": "PIECE",
+                                                                      "valid": true,
+                                                                      "settings": {
+                                                                        "input": {
+                                                                          "cc": [],
+                                                                          "to": [
+                                                                            "{{trigger['body']['manufacturer_email']}}"
+                                                                          ],
+                                                                          "bcc": [],
+                                                                          "auth": "{{connections['resend']}}",
+                                                                          "from": "no-reply@internetofproduction.org",
+                                                                          "content": "Unfortunately the items you delivered to have not passed final quality inspection.\n<br><br><br>\nPlease contact us to discuss the details of the items that did not pass final quality inspection and next steps to rectify matters.",
+                                                                          "subject": "Items ({{trigger['body']['product_name']}}) did not pass quality inspection",
+                                                                          "reply_to": "{{trigger['body']['initiator_email']}}",
+                                                                          "from_name": "{{trigger['body']['initiator_name']}}",
+                                                                          "content_type": "html"
+                                                                        },
+                                                                        "pieceName": "@activepieces/piece-resend",
+                                                                        "pieceType": "OFFICIAL",
+                                                                        "actionName": "send_email",
+                                                                        "inputUiInfo": {
+                                                                          "customizedInputs": {}
+                                                                        },
+                                                                        "packageType": "REGISTRY",
+                                                                        "pieceVersion": "0.1.4",
+                                                                        "errorHandlingOptions": {
+                                                                          "retryOnFailure": {
+                                                                            "value": false
+                                                                          },
+                                                                          "continueOnFailure": {
+                                                                            "value": false
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "displayName": "Send final QA failure email"
+                                                                    }
+                                                                  ],
+                                                                  "settings": {
+                                                                    "branches": [
+                                                                      {
+                                                                        "branchName": "On Success",
+                                                                        "branchType": "CONDITION",
+                                                                        "conditions": [
+                                                                          [
+                                                                            {
+                                                                              "operator": "EXISTS",
+                                                                              "firstValue": "{{step_25['approved']}}"
+                                                                            }
+                                                                          ]
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "branchName": "Otherwise",
+                                                                        "branchType": "FALLBACK"
+                                                                      }
+                                                                    ],
+                                                                    "inputUiInfo": {},
+                                                                    "executionType": "EXECUTE_FIRST_MATCH"
+                                                                  },
+                                                                  "displayName": "Branch"
+                                                                },
+                                                                "displayName": "Wait for Approval"
+                                                              },
+                                                              "displayName": "Send Email"
+                                                            },
+                                                            "displayName": "Create final items receipt confirmation Links"
+                                                          },
+                                                          "displayName": "Wait for Approval"
+                                                        },
+                                                        "displayName": "Send Email"
+                                                      },
+                                                      "displayName": "Create Final shipment Approval Links"
+                                                    },
+                                                    "displayName": "Wait for 2nd payment Approval"
+                                                  },
+                                                  "displayName": "Send Notification of passing QA To Manufacturer"
+                                                },
+                                                "displayName": "Send Notification of passing QA to Initiator"
+                                              },
+                                              "displayName": "Create 2nd payment Approval Link"
+                                            },
+                                            {
+                                              "name": "step_15",
+                                              "type": "PIECE",
+                                              "valid": true,
+                                              "settings": {
+                                                "input": {
+                                                  "cc": [],
+                                                  "to": [
+                                                    "{{trigger['body']['initiator_email']}}"
+                                                  ],
+                                                  "bcc": [],
+                                                  "auth": "{{connections['resend']}}",
+                                                  "from": "no-reply@internetofproduction.org",
+                                                  "content": "The sample item manufactured by {{trigger['body']['manufacturer_name']}} did not pass quality inspection.\n\nPlease reach out to {{trigger['body']['manufacturer_name']}} ({{trigger['body']['manufacturer_email']}}) to either resolve this matter or inform them that the contract is annulled.",
+                                                  "subject": "Quality inspection failure",
+                                                  "reply_to": "{{trigger['body']['qi_email']}}",
+                                                  "from_name": "{{trigger['body']['qi_name']}}",
+                                                  "content_type": "html"
+                                                },
+                                                "pieceName": "@activepieces/piece-resend",
+                                                "pieceType": "OFFICIAL",
+                                                "actionName": "send_email",
+                                                "inputUiInfo": {
+                                                  "customizedInputs": {}
+                                                },
+                                                "packageType": "REGISTRY",
+                                                "pieceVersion": "0.1.4",
+                                                "errorHandlingOptions": {
+                                                  "retryOnFailure": {
+                                                    "value": false
+                                                  },
+                                                  "continueOnFailure": {
+                                                    "value": false
+                                                  }
+                                                }
+                                              },
+                                              "nextAction": {
+                                                "name": "step_19",
+                                                "type": "PIECE",
+                                                "valid": true,
+                                                "settings": {
+                                                  "input": {
+                                                    "cc": [
+                                                      "{{trigger['body']['initiator_email']}}"
+                                                    ],
+                                                    "to": [
+                                                      "{{trigger['body']['manufacturer_email']}}"
+                                                    ],
+                                                    "bcc": [],
+                                                    "auth": "{{connections['resend']}}",
+                                                    "from": "no-reply@internetofproduction.org",
+                                                    "content": "The sample ({{trigger['body']['product_name']}}) you manufactured under contract to {{trigger['body']['initiator_name']}} did not pass quality inspection.\n\nYou are requested to cease any further production and contact {{trigger['body']['initiator_name']}} ({{trigger['body']['initiator_email']}}) to resolve this issue.",
+                                                    "subject": "Quality inspection failure",
+                                                    "reply_to": "{{trigger['body']['qi_email']}}",
+                                                    "from_name": "{{trigger['body']['qi_name']}}",
+                                                    "content_type": "html"
+                                                  },
+                                                  "pieceName": "@activepieces/piece-resend",
+                                                  "pieceType": "OFFICIAL",
+                                                  "actionName": "send_email",
+                                                  "inputUiInfo": {
+                                                    "customizedInputs": {}
+                                                  },
+                                                  "packageType": "REGISTRY",
+                                                  "pieceVersion": "0.1.4",
+                                                  "errorHandlingOptions": {
+                                                    "retryOnFailure": {
+                                                      "value": false
+                                                    },
+                                                    "continueOnFailure": {
+                                                      "value": false
+                                                    }
+                                                  }
+                                                },
+                                                "displayName": "Send Notification of QA failure Email Copy"
+                                              },
+                                              "displayName": "Send Notification of QA failure Email"
+                                            }
+                                          ],
+                                          "settings": {
+                                            "branches": [
+                                              {
+                                                "branchName": "On Success",
+                                                "branchType": "CONDITION",
+                                                "conditions": [
+                                                  [
+                                                    {
+                                                      "operator": "EXISTS",
+                                                      "firstValue": "{{step_14['approved']}}"
+                                                    }
+                                                  ]
+                                                ]
+                                              },
+                                              {
+                                                "branchName": "Otherwise",
+                                                "branchType": "FALLBACK"
+                                              }
+                                            ],
+                                            "inputUiInfo": {},
+                                            "executionType": "EXECUTE_FIRST_MATCH"
+                                          },
+                                          "displayName": "Branch"
+                                        },
+                                        "displayName": "Wait for result of quality inspection"
+                                      },
+                                      "displayName": "Send Email for QA test of sample"
+                                    },
+                                    "displayName": "Create Quality inspection Approval Links"
+                                  },
+                                  "displayName": "Wait for sample shipment confirmation"
+                                },
+                                "displayName": "Send upfront payment confirmation Email"
+                              },
+                              "displayName": "Create sample shipment Links"
+                            },
+                            {
+                              "name": "step_32",
+                              "type": "PIECE",
+                              "valid": true,
+                              "settings": {
+                                "input": {
+                                  "cc": [],
+                                  "to": [
+                                    "{{trigger['body']['manufacturer_email']}}"
+                                  ],
+                                  "bcc": [],
+                                  "auth": "{{connections['resend']}}",
+                                  "from": "no-reply@internetofproduction.org",
+                                  "content": "{{trigger['body']['initiator_name']}} has rejected the request for upfront payment for the manufacturer of {{trigger['body']['product_name']}}.\n<br><br><br>\nPlease do not proceed with the production.",
+                                  "subject": "Rejection of upfront payment",
+                                  "reply_to": "{{trigger['body']['initiator_email']}}",
+                                  "from_name": "{{trigger['body']['initiator_name']}}",
+                                  "content_type": "html"
+                                },
+                                "pieceName": "@activepieces/piece-resend",
+                                "pieceType": "OFFICIAL",
+                                "actionName": "send_email",
+                                "inputUiInfo": {
+                                  "customizedInputs": {}
+                                },
+                                "packageType": "REGISTRY",
+                                "pieceVersion": "0.1.4",
+                                "errorHandlingOptions": {
+                                  "retryOnFailure": {
+                                    "value": false
+                                  },
+                                  "continueOnFailure": {
+                                    "value": false
+                                  }
+                                }
+                              },
+                              "displayName": "Send upfront payment rejection Email"
+                            }
+                          ],
+                          "settings": {
+                            "branches": [
+                              {
+                                "branchName": "On Success",
+                                "branchType": "CONDITION",
+                                "conditions": [
+                                  [
+                                    {
+                                      "operator": "EXISTS",
+                                      "firstValue": "{{step_7['approved']}}"
+                                    }
+                                  ]
+                                ]
+                              },
+                              {
+                                "branchName": "Otherwise",
+                                "branchType": "FALLBACK"
+                              }
+                            ],
+                            "inputUiInfo": {},
+                            "executionType": "EXECUTE_FIRST_MATCH"
+                          },
+                          "displayName": "Branch"
+                        },
+                        "displayName": "Wait for payment Approval"
+                      },
+                      "displayName": "Send upfront payment request"
+                    },
+                    "displayName": "Create upfront payment Approval Links"
+                  },
+                  "displayName": "Send order confirmation Email"
+                },
+                {
+                  "name": "step_30",
+                  "type": "PIECE",
+                  "valid": true,
+                  "settings": {
+                    "input": {
+                      "cc": [],
+                      "to": [
+                        "{{trigger['body']['initiator_email']}}"
+                      ],
+                      "bcc": [],
+                      "auth": "{{connections['resend']}}",
+                      "from": "no-reply@internetofproduction.org",
+                      "content": "The manufacturing contract that was sent to {{trigger['body']['manufacturer_name']}} ({{trigger['body']['manufacturer_email']}}) has been rejected!",
+                      "subject": "Manufacturing contract rejected",
+                      "reply_to": "{{trigger['body']['manufacturer_email']}}",
+                      "from_name": "{{trigger['body']['manufacturers'][0]['manufacturer_name']}}",
+                      "content_type": "html"
+                    },
+                    "pieceName": "@activepieces/piece-resend",
+                    "pieceType": "OFFICIAL",
+                    "actionName": "send_email",
+                    "inputUiInfo": {
+                      "customizedInputs": {}
+                    },
+                    "packageType": "REGISTRY",
+                    "pieceVersion": "0.1.4",
+                    "errorHandlingOptions": {
+                      "retryOnFailure": {
+                        "value": false
+                      },
+                      "continueOnFailure": {
+                        "value": false
+                      }
+                    }
+                  },
+                  "displayName": "Send order rejection Email"
+                }
+              ],
+              "settings": {
+                "branches": [
+                  {
+                    "branchName": "On Success",
+                    "branchType": "CONDITION",
+                    "conditions": [
+                      [
+                        {
+                          "operator": "EXISTS",
+                          "firstValue": "{{step_4['approved']}}"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "branchName": "Otherwise",
+                    "branchType": "FALLBACK"
+                  }
+                ],
+                "inputUiInfo": {},
+                "executionType": "EXECUTE_FIRST_MATCH"
+              },
+              "displayName": "Branch"
+            },
+            "displayName": "Wait for order Approval"
+          },
+          "displayName": "Send order approval request Email"
+        },
+        "displayName": "Create order Approval Links"
+      }
+    },
+    "valid": true,
+    "schemaVersion": "1"
+  },
+  "blogUrl": ""
+}
